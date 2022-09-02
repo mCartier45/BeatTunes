@@ -14,12 +14,17 @@ secret = 'd0815c59eb194a009b0cbeb6fb9a4e64'
 credManager = SpotifyClientCredentials(client_id=cid, client_secret=secret)
 sp = spotipy.Spotify(client_credentials_manager=credManager)
 
-
-def createJsons(uri, fileNum):
+def createFeaturesJsons(uri, fileNum):
+    results = sp.audio_features(uri)
+    fileName = "FeatSong#" + str(fileNum)
+    f = open("/Users/root1/Documents/pycharmProjects/pythonProject/FeatJsons/" + fileName + ".json", "x+")
+    f.write(str(results))
+    f.close()
+def createAnalysisJsons(uri, fileNum):
     # Store audio_analysis in JSON file
     results = sp.audio_analysis(uri)
-    fileName = "song#" + str(fileNum)
-    f = open("/Users/root1/Documents/pycharmProjects/pythonProject/jsons/" + fileName + ".json", "x+")
+    fileName = "AnalSong#" + str(fileNum)
+    f = open("/Users/root1/Documents/pycharmProjects/pythonProject/AnalJsons/" + fileName + ".json", "x+")
     f.write(str(results))
     f.close()
 
@@ -37,5 +42,6 @@ if __name__ == '__main__':
     for i in playlistUris:
         if j > 5:
             break
-        createJsons(i, j)
+        createAnalysisJsons(i, j)
+        createFeaturesJsons(i, j)
         j += 1
