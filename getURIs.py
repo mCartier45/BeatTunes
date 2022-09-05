@@ -1,16 +1,21 @@
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
+from userLogin import GetUrls
 
 class getURIs:
-    """
-    cid = 'a4d934e4e20c4eabba2aa6240c13cba4'
-    secret = 'd0815c59eb194a009b0cbeb6fb9a4e64'
-    credManager = SpotifyClientCredentials(client_id=cid, client_secret=secret)
-    sp = spotipy.Spotify(client_credentials_manager=credManager)
-    """
 
     def __init__(self):
         pass
+
+    def getPlaylistArray(self):
+        user = GetUrls()
+        playlists = user.getUrls()
+        return playlists
+
+    def getPlaylistNames(self):
+        user = GetUrls()
+        names = user.getPlaylistNames()
+        return names
 
     def getTrackNames(self, playlistID, sp):
         results = sp.playlist_tracks(playlistID)
@@ -39,3 +44,4 @@ class getURIs:
             track_uri = item["track"]["uri"]
             uris.append(track_uri)
         return uris
+
