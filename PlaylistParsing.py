@@ -37,7 +37,7 @@ class PlaylistProcessor:
         if len(results) == 0:
             print("No playlists Found")
         return results
-        # TODO: Clean this up a bit because goddamn
+
     def get_uris(self, playlist_uri):
         tracks = self.sp.playlist_items(playlist_id=playlist_uri)
         track_uris = []
@@ -53,27 +53,26 @@ class PlaylistProcessor:
             track_names.append(x['track']['name'])
         return track_names
 
-    def extract_song_information(self, track_list):
-        # for x in track_list:
-        # TODO: Make this do everything, including getting titles and getting URI's and then displaying the results.
-        temp = self.sp.audio_features(track_list[0])
-        print("BPM: ", temp[0]['tempo'])
-        print("Danceability: ", temp[0]['danceability'])
+    def extract_song_information(self, title_list, uri_list):
+        for x in range(len(uri_list)):
+            temp = self.sp.audio_features(uri_list[x])
+            print("-------------------------")
+            print("Song Title: ", title_list[x])
+            print("BPM: ", temp[0]['tempo'])
+            print("Danceability: ", temp[0]['danceability'])
 
 if __name__ == "__main__":
+
     test = PlaylistProcessor()
     playlists = test.get_playlists()
 
     print("Looking for Playlists")
-
-    print(playlists)
 
     for x in playlists['items']:
         print("----------------------")
         print(x['name'])
         print("----------------------")
 
-        print(test.get_titles(playlist_uri=x['uri'])[0])
-        test.extract_song_information(test.get_uris(playlist_uri=x['uri']))
-        print(test.get_titles(playlist_uri=x['uri'])[0])
+        # This line does it ALL
+        test.extract_song_information(test.get_titles(playlist_uri=x['uri']), test.get_uris(playlist_uri=x['uri']))
 
