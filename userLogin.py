@@ -1,7 +1,6 @@
 import os
 
 import spotipy
-from dotenvy import load_env
 from spotipy.oauth2 import SpotifyOAuth, SpotifyClientCredentials
 import spotipy.util as util
 from dotenv import load_dotenv
@@ -19,9 +18,8 @@ sp = spotipy.oauth2.SpotifyOAuth(cid, secret, redirect_uri)
 
 username = 'wvlyrhu0u1141lcnyxikbg5re'
 scope = 'user-library-read'
-token = util.prompt_for_user_token(username, scope, client_id=cid, client_secret=secret,
-                                   redirect_uri=redirect_uri)
-
+# Use Auth Manager
+authManager = SpotifyOAuth(client_id=cid, client_secret=secret, redirect_uri=redirect_uri, scope=scope)
 class GetUrls:
     def __init__(self):
         pass
