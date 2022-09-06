@@ -4,11 +4,11 @@ import spotipy
 from dotenvy import load_env
 from spotipy.oauth2 import SpotifyOAuth, SpotifyClientCredentials
 import spotipy.util as util
-import dotenv
+from dotenv import load_dotenv
 # create variables for spotify authentication
 
 
-load_env(".env")
+load_dotenv()
 cid = os.getenv("CID")
 secret = os.getenv("SECRET")
 redirect_uri = 'http://localhost/'
