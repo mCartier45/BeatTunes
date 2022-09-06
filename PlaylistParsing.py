@@ -37,10 +37,11 @@ class PlaylistProcessor:
         if len(results) == 0:
             print("No playlists Found")
         return results
-
+        # TODO: Clean this up a bit because goddamn
     def get_uris(self, playlist_uri):
         tracks = self.sp.playlist_items(playlist_id=playlist_uri)
         track_uris = []
+
         for x in tracks['items']:
             track_uris.append(x['track']['uri'])
         return track_uris
@@ -54,6 +55,7 @@ class PlaylistProcessor:
 
     def extract_song_information(self, track_list):
         # for x in track_list:
+        # TODO: Make this do everything, including getting titles and getting URI's and then displaying the results.
         temp = self.sp.audio_features(track_list[0])
         print("BPM: ", temp[0]['tempo'])
         print("Danceability: ", temp[0]['danceability'])
