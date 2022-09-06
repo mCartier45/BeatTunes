@@ -1,10 +1,16 @@
+import os
+
 import spotipy
+from dotenvy import load_env
 from spotipy.oauth2 import SpotifyOAuth, SpotifyClientCredentials
 import spotipy.util as util
-
+import dotenv
 # create variables for spotify authentication
-cid = 'a4d934e4e20c4eabba2aa6240c13cba4'
-secret = 'd0815c59eb194a009b0cbeb6fb9a4e64'
+
+
+load_env(".env")
+cid = os.getenv("CID")
+secret = os.getenv("SECRET")
 redirect_uri = 'http://localhost/'
 
 credManager = SpotifyClientCredentials(cid, secret)
@@ -45,17 +51,13 @@ class GetUrls:
 
 if __name__ == '__main__':
     
-    username = 'wvlyrhu0u1141lcnyxikbg5re'
+    username = '4wrYLspvSO21PHoYuUsEig&nd'
     scope = 'user-library-read'
     token = util.prompt_for_user_token(username, scope, client_id=cid, client_secret=secret, redirect_uri=redirect_uri)
 
     if token:
         sp = spotipy.Spotify(auth=token)
         results = sp.current_user_saved_tracks()
-        fileName = "results"
-        f = open("/Users/root1/Documents/pycharmProjects/pythonProject/FeatJsons/" + fileName + ".json", "x+")
-        f.write(str(results))
-        f.close()
         print(results)
     else:
         print("failed")
