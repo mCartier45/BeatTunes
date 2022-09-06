@@ -38,11 +38,25 @@ class PlaylistProcessor:
             print("No playlists Found")
         return results
 
-    def parse_playlist(self, playlist_uri):
+    def get_uris(self, playlist_uri):
         tracks = self.sp.playlist_items(playlist_id=playlist_uri)
+        track_uris = []
         for x in tracks['items']:
-            print(x['track']['name'])
+            track_uris.append(x['track']['uri'])
+        return track_uris
 
+    def get_titles(self, playlist_uri):
+        tracks = self.sp.playlist_items(playlist_id=playlist_uri)
+        track_names = []
+        for x in tracks['items']:
+            track_names.append(x['track']['name'])
+        return track_names
+
+    def extract_song_information(self, track_list):
+        # for x in track_list:
+        temp = self.sp.audio_features(track_list[0])
+        print("BPM: ", temp[0]['tempo'])
+        print("Danceability: ", temp[0]['danceability'])
 
 if __name__ == "__main__":
     test = PlaylistProcessor()
@@ -56,4 +70,8 @@ if __name__ == "__main__":
         print("----------------------")
         print(x['name'])
         print("----------------------")
-        test.parse_playlist(playlist_uri=x['uri'])
+
+        print(test.get_titles(playlist_uri=x['uri'])[0])
+        test.extract_song_information(test.get_uris(playlist_uri=x['uri']))
+        print(test.get_titles(playlist_uri=x['uri'])[0])
+
