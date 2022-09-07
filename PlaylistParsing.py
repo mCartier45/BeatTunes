@@ -1,15 +1,15 @@
 import os
-import webbrowser
-from urllib.parse import urlencode
-
-import requests
+import DBProcessor
 import spotipy
 from dotenv import load_dotenv
-from spotipy import SpotifyClientCredentials, SpotifyOAuth
+from spotipy import SpotifyOAuth
 
 
 class PlaylistProcessor:
-    # api_endpoint = https://api.spotify.com/v1/users/user_id/playlists
+    # used to check if the DB files exists and if it does, skip it. If it doesn't,
+    # process it
+    file_names= ['Top Billboard Hits 2000s', 'Top Billboard Hits 1990s',
+                 'Top Billboard Hits 1980s']
     base_url = "https://api.spotify.com/v1/"
     profile_id = "3146an25jyfyfmtaj3hxgiuel73i"  # Tristan's Profile
 
@@ -21,13 +21,6 @@ class PlaylistProcessor:
 
     def __init__(self):
         load_dotenv()
-        self.make_init_request()
-
-    def get_playlist_request(self):
-        pass
-
-    def make_init_request(self):
-        pass
 
     def get_playlists(self):
         results = self.sp.current_user_playlists()
@@ -56,12 +49,18 @@ class PlaylistProcessor:
     # TODO: Use this method to return a dictionary of relevant information
     # and save it to the database.
     def extract_song_information(self, title_list, uri_list):
+        decade_dict = {}
+
+        self.sp.tracks
         for x in range(len(uri_list)):
-            temp = self.sp.audio_features(uri_list[x])
-            print("-------------------------")
-            print("Song Title: ", title_list[x])
-            print("BPM: ", temp[0]['tempo'])
-            print("Danceability: ", temp[0]['danceability'])
+            temp_features = self.sp.audio_features(uri_list[x])
+            decade_dict[uri_list[x]] = {"song_title": title_list[x], "bpm": temp_features[0]['tempo'],
+                                       "danceability": temp_features[0]['danceability'], "loudness": temp_features[0]['loudness'],
+                                       "speechiness": temp_features[0]['speechiness'], "acousticness": temp_features[0]['acousticness'],
+                                       "duration_ms": temp_features[0]['duration_ms'], "key": temp_features[0]['key'],
+                                       "instrumentalness": temp_features[0]['instrumentalness']}
+        return decade_dict
+
 
 if __name__ == "__main__":
 
@@ -76,5 +75,4 @@ if __name__ == "__main__":
         print("----------------------")
 
         # This line does it ALL
-        test.extract_song_information(test.get_titles(playlist_uri=x['uri']), test.get_uris(playlist_uri=x['uri']))
-
+        new_dict = test.extract_song_information(test.get_titles(playlist_uri=x['uri']), test.get_uris(playlist_uri=x['uri']))
