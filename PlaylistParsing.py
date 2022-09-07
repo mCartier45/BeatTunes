@@ -53,6 +53,8 @@ class PlaylistProcessor:
             track_names.append(x['track']['name'])
         return track_names
 
+    # TODO: Use this method to return a dictionary of relevant information
+    # and save it to the database.
     def extract_song_information(self, title_list, uri_list):
         for x in range(len(uri_list)):
             temp = self.sp.audio_features(uri_list[x])
