@@ -69,7 +69,6 @@ class DBOps:
 
 
 if __name__ == "__main__":
-    read_j = readJSON.ReadJSON()
 
     # read_j.replace_single_quotes(file="FeatSong0.json")
     # test_song = read_j.parse_json(file="FeatSong0.json")
