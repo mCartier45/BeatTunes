@@ -1,28 +1,46 @@
-import random
+import os
 import sqlite3
-import readJSON
+
 
 
 class DBOps:
-    connect = sqlite3.connect("beattunes.db")
-    cursor = connect.cursor()
 
-    def __init__(self):
-        pass
+    def __init__(self, db):
+        self.connect = sqlite3.connect(db + ".db")
+        self.cursor = self.connect.cursor()
+
+
+    def initialize_db(self, playlist):
+        file = open("data/" + playlist + ".db", "x")
+        self.cursor.execute('''
+          CREATE TABLE IF NOT EXISTS  songs
+          (title TEXT primary key, 
+           key TEXT,
+           tempo INTEGER,
+           danceability INTEGER,
+           loudness INTEGER,
+           speechiness INTEGER,
+           acousticness INTEGER,
+           duration_ms INTEGER)
+          ''')
+        self.connect.commit()
 
     def add_song_to_db(self, song):
         keys = {0: "C", 1: "C#", 2: "D", 3: "D#", 4: "E",
                 5: "F", 6: "F#", 7: "G", 8: "G#", 9: "A",
                 10: "B Flat"}
 
-        bpm = song.get("BPM")
+        bpm = song.get("bpm")
         key = keys.get(song.get("key"))
         loudness = song.get("loudness")
         acoustic = song.get("acousticness")
         time_sig = song.get("Time Signature")
         dance = song.get("danceability")
+        title = song.get("title")
 
-        q = f"INSERT INTO songs VALUES ('{bpm}', '{key}','{loudness}','{acoustic}','{time_sig}','{dance}', null, null) "
+        print(bpm, key, loudness, acoustic, time_sig, dance, title)
+
+        q = f"INSERT INTO songs VALUES ('{bpm}', '{key}','{loudness}','{acoustic}','{time_sig}','{dance}', {title}) "
 
         self.cursor.execute(q)
         self.connect.commit()
@@ -67,6 +85,11 @@ class DBOps:
         self.cursor.close()
         self.connect.close()
 
+    def check_if_db_exists(self, db_name):
+        if os.path.exists("data/" + db_name + ".db"):
+            return True
+        else:
+            return False
 
 if __name__ == "__main__":
 
