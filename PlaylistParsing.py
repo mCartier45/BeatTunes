@@ -57,8 +57,10 @@ class PlaylistProcessor:
                                         "loudness": temp_features[0]['loudness'],
                                         "speechiness": temp_features[0]['speechiness'],
                                         "acousticness": temp_features[0]['acousticness'],
-                                        "duration_ms": temp_features[0]['duration_ms'], "key": temp_features[0]['key'],
-                                        "instrumentalness": temp_features[0]['instrumentalness']}
+                                        "duration_ms": temp_features[0]['duration_ms'],
+                                        "key": temp_features[0]['key'],
+                                        "instrumentalness": temp_features[0]['instrumentalness'],
+                                        "title": title_list[x]}
         return decade_dict
 
 
@@ -82,4 +84,4 @@ if __name__ == "__main__":
         # This line does it ALL
         new_dict = test.extract_song_information(uris, titles)
         print(new_dict)
-        db_ops.add_song_to_db(new_dict)
+        db_ops.add_songs_to_db(new_dict)

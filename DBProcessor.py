@@ -6,44 +6,46 @@ import sqlite3
 class DBOps:
 
     def __init__(self, db):
-        self.connect = sqlite3.connect(db + ".db")
+        self.connect = sqlite3.connect("data/" + db + ".db")
         self.cursor = self.connect.cursor()
 
 
     def initialize_db(self, playlist):
-        file = open("data/" + playlist + ".db", "x")
+        # file = open("data/" + playlist + ".db", "x")
         self.cursor.execute('''
-          CREATE TABLE IF NOT EXISTS  songs
+          CREATE TABLE IF NOT EXISTS songs
           (title TEXT primary key, 
            key TEXT,
            tempo INTEGER,
            danceability INTEGER,
            loudness INTEGER,
-           speechiness INTEGER,
            acousticness INTEGER,
            duration_ms INTEGER)
           ''')
         self.connect.commit()
 
-    def add_song_to_db(self, song):
+    def add_songs_to_db(self, song_dict):
         keys = {0: "C", 1: "C#", 2: "D", 3: "D#", 4: "E",
                 5: "F", 6: "F#", 7: "G", 8: "G#", 9: "A",
-                10: "B Flat"}
+                10: "B Flat", 11: "B"}
 
-        bpm = song.get("bpm")
-        key = keys.get(song.get("key"))
-        loudness = song.get("loudness")
-        acoustic = song.get("acousticness")
-        time_sig = song.get("Time Signature")
-        dance = song.get("danceability")
-        title = song.get("title")
+        for song in song_dict:
+            bpm = song_dict[song].get("bpm")
+            key = keys.get(song_dict[song].get("key"))
+            loudness = song_dict[song].get("loudness")
+            acoustic = song_dict[song].get("acousticness")
+            dance = song_dict[song].get("danceability")
+            title = song_dict[song].get("title")
+            duration_ms = song_dict[song].get("duration_ms")
+            speech = song_dict[song].get("speechiness")
 
-        print(bpm, key, loudness, acoustic, time_sig, dance, title)
+            print(bpm, key, loudness, acoustic, dance, title, duration_ms)
 
-        q = f"INSERT INTO songs VALUES ('{bpm}', '{key}','{loudness}','{acoustic}','{time_sig}','{dance}', {title}) "
+            # Need to place these into the order that the values are inserted
+            q = f"INSERT INTO songs VALUES ('{title}', '{key}','{bpm}','{dance}','{loudness}', '{acoustic}', '{duration_ms}')"
 
-        self.cursor.execute(q)
-        self.connect.commit()
+            self.cursor.execute(q)
+            self.connect.commit()
 
     def print_db(self):
 
