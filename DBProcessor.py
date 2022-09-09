@@ -5,10 +5,16 @@ import sqlite3
 class DBOps:
 
     def __init__(self):
-        self.connect = sqlite3.connect("data/condensed.db")
-        self.cursor = self.connect.cursor()
+        if os.path.exists("data/condensed.db"):
+            self.connect = sqlite3.connect("data/condensed.db")
+            self.cursor = self.connect.cursor()
+        else:
+            self.cursor = None
+            self.connect = None
 
     def initialize_db(self):
+        self.connect = sqlite3.connect("data/condensed.db")
+        self.cursor = self.connect.cursor()
         # file = open("data/" + playlist + ".db", "x")
         self.cursor.execute('''
           CREATE TABLE IF NOT EXISTS songs
@@ -48,7 +54,6 @@ class DBOps:
             self.connect.commit()
 
     def print_all_bpms(self):
-
         for x in self.cursor.execute("select tempo, title from songs"):
             print("-------------------------------")
             print("TITLE: ", x[1])
@@ -68,23 +73,11 @@ class DBOps:
         for x in self.cursor.execute(query):
             print(x[0])
 
-    def get_most_common_key(self):
-        most_common = "Default Key"
-        list_of_keys = []
-        counter = 0
-
-        for x in self.cursor.execute("select key from songs"):  # Append to List
-            list_of_keys.append(x[0])
-
-        for x in list_of_keys:  # Loop list and find most common
-            current_frequency = list_of_keys.count(x)
-
-            if current_frequency > counter:
-                counter = current_frequency
-                most_common = x
-
-        print(most_common)
-        return most_common
+    def get_most_common_key(self, year):
+        q = "SELECT key FROM songs WHERE year=" + year + " GROUP BY key ORDER BY key DESC LIMIT 1"
+        for x in self.cursor.execute(q):
+            print(x[0])
+            return x[0]
 
     def close_db(self):
         self.cursor.close()
@@ -95,20 +88,3 @@ class DBOps:
             return True
         else:
             return False
-
-
-if __name__ == "__main__":
-
-    # read_j.replace_single_quotes(file="FeatSong0.json")
-    # test_song = read_j.parse_json(file="FeatSong0.json")
-
-    db_ops = DBOps()
-    for i in range(100):
-        pass
-        # db_ops.add_song_to_db(test_song)
-
-    db_ops.print_db()
-    db_ops.get_avg_bpm()
-    db_ops.get_most_common_key()
-
-    db_ops.close_db()

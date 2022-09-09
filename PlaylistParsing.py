@@ -81,6 +81,7 @@ if __name__ == "__main__":
 
     print("Looking for Playlists")
     if not os.path.exists("data/condensed.db"):
+
         for x in playlists['items']:
             playlist_name = x['name']
             print("----------------------")
@@ -100,3 +101,4 @@ if __name__ == "__main__":
 
     print("Average BPM for year 1950: %d" % db_ops.get_avg_bpm(year="1980"))
     print(db_ops.debug_sql(query="select key from songs where year=1970"))
+    print("The most common key in 2020 was: " + db_ops.get_most_common_key(year="1960"))
