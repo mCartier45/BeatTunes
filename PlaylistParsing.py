@@ -5,26 +5,21 @@ import spotipy
 from dotenv import load_dotenv
 from spotipy import SpotifyOAuth
 
+'''
+Method: Playlist Processor
+Use: Access user's profile and parse their playlists. Integrated with DBProcessor file.
+'''
+
 
 class PlaylistProcessor:
-    # used to check if the DB files exists and if it does, skip it. If it doesn't,
-    # process it
-    file_names = ['Top Billboard Hits 1950s', 'Top Billboard Hits 1960s',
-                  'Top Billboard Hits 1970s', 'Top Billboard Hits 1980s',
-                  'Top Billboard Hits 1990s', 'Top Billboard Hits 2000s',
-                  'Top Billboard Hits 2010s', 'Top Billboard Hits 2020s']
-    base_url = "https://api.spotify.com/v1/"
-    profile_id = "3146an25jyfyfmtaj3hxgiuel73i"  # Tristan's Profile
-
-    load_dotenv()
-    cid = os.getenv("CID")
-    secret = os.getenv("SECRET")
-    credManager = SpotifyOAuth(client_id=cid, client_secret=secret, redirect_uri="http://localhost:8888/callback",
-                               scope='user-library-read')
-    sp = spotipy.Spotify(client_credentials_manager=credManager)
-
     def __init__(self):
         load_dotenv()
+        self.cid = os.getenv("CID")
+        self.secret = os.getenv("SECRET")
+        self.credManager = SpotifyOAuth(client_id=self.cid, client_secret=self.secret,
+                                        redirect_uri="http://localhost:8888/callback",
+                                        scope='user-library-read')
+        self.sp = spotipy.Spotify(client_credentials_manager=self.credManager)
 
     def get_playlists(self):
         results = self.sp.current_user_playlists()
@@ -52,6 +47,7 @@ class PlaylistProcessor:
 
         for x in range(len(uri_list)):
             temp_features = self.sp.audio_features(uri_list[x])
+            # Creates an entry in the dictionary to return
             decade_dict[uri_list[x]] = {"song_title": title_list[x],
                                         "bpm": temp_features[0]['tempo'],
                                         "danceability": temp_features[0]['danceability'],
@@ -71,34 +67,3 @@ class PlaylistProcessor:
         json_years = json.load(file)
         file.close()
         return json_years[0][playlist_name]
-
-
-if __name__ == "__main__":
-
-    test = PlaylistProcessor()
-    playlists = test.get_playlists()
-    db_ops = DBProcessor.DBOps()
-
-    print("Looking for Playlists")
-    if not os.path.exists("data/condensed.db"):
-
-        for x in playlists['items']:
-            playlist_name = x['name']
-            print("----------------------")
-            print(playlist_name)
-            print("----------------------")
-
-            uris, titles = test.get_uris_and_titles(x['uri'])
-
-            db_ops.initialize_db()
-
-            # This line does it ALL
-            new_dict = test.extract_song_information(uris, titles, playlist_name)
-            print(new_dict)
-            db_ops.add_songs_to_db(new_dict)
-
-    db_ops.print_all_bpms()
-
-    print("Average BPM for year 1950: %d" % db_ops.get_avg_bpm(year="1980"))
-    print(db_ops.debug_sql(query="select key from songs where year=1970"))
-    print("The most common key in 2020 was: " + db_ops.get_most_common_key(year="1960"))

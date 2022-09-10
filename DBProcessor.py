@@ -1,21 +1,26 @@
+import json
 import os
 import sqlite3
+
+import PlaylistParsing
 
 
 class DBOps:
 
     def __init__(self):
-        if os.path.exists("data/condensed.db"):
-            self.connect = sqlite3.connect("data/condensed.db")
+        self.db_path = "data/beattunes.db"
+        if os.path.exists(self.db_path):
+            self.connect = sqlite3.connect(self.db_path)
             self.cursor = self.connect.cursor()
         else:
             self.cursor = None
             self.connect = None
 
     def initialize_db(self):
-        self.connect = sqlite3.connect("data/condensed.db")
+        # Line creates the DB
+        self.connect = sqlite3.connect(self.db_path)
         self.cursor = self.connect.cursor()
-        # file = open("data/" + playlist + ".db", "x")
+        # SQL to create the table if it doesn't exist.
         self.cursor.execute('''
           CREATE TABLE IF NOT EXISTS songs
           (title TEXT, 
@@ -28,15 +33,39 @@ class DBOps:
            year INTEGER,
            uri TEXT primary key)
           ''')
+        # Commit DB Chances
         self.connect.commit()
 
+        # Init Playlist Processing
+        process_playlist = PlaylistParsing.PlaylistProcessor()
+        playlists = process_playlist.get_playlists()
+
+        print("Looking for Playlists")
+        # Add songs from playlists to database
+        for x in playlists['items']:
+            playlist_name = x['name']
+            print("----------------------")
+            print(playlist_name)
+            print("----------------------")
+
+            uris, titles = process_playlist.get_uris_and_titles(x['uri'])
+
+            # This line does it ALL
+            new_dict = process_playlist.extract_song_information(uris, titles, playlist_name)
+            print(new_dict)
+            self.add_songs_to_db(new_dict)
+
     def add_songs_to_db(self, song_dict):
-        keys = {0: "C", 1: "C#", 2: "D", 3: "D#", 4: "E",
-                5: "F", 6: "F#", 7: "G", 8: "G#", 9: "A",
-                10: "B Flat", 11: "B"}
+
+        # Open keys JSON file for below processing
+        file = open("data/keys.json")
+        keys = json.load(file)
+        file.close()
+
+        # Get all song attributes and add them to the dictionary.
         for song in song_dict:
             bpm = song_dict[song].get("bpm")
-            key = keys.get(song_dict[song].get("key"))
+            key = keys[0][(str(song_dict[song].get("key")))]
             loudness = song_dict[song].get("loudness")
             acoustic = song_dict[song].get("acousticness")
             dance = song_dict[song].get("danceability")
@@ -54,6 +83,7 @@ class DBOps:
             self.connect.commit()
 
     def print_all_bpms(self):
+        # SQL returns title + tempo, only used for printing, void method
         for x in self.cursor.execute("select tempo, title from songs"):
             print("-------------------------------")
             print("TITLE: ", x[1])
@@ -66,7 +96,6 @@ class DBOps:
 
     def get_avg_bpm(self, year):
         for x in self.cursor.execute("select avg(tempo) from songs where year=" + year):
-            print(x[0])
             return x[0]
 
     def debug_sql(self, query):
@@ -74,17 +103,11 @@ class DBOps:
             print(x[0])
 
     def get_most_common_key(self, year):
+        # Returns most common key via SQL
         q = "SELECT key FROM songs WHERE year=" + year + " GROUP BY key ORDER BY key DESC LIMIT 1"
         for x in self.cursor.execute(q):
-            print(x[0])
             return x[0]
 
     def close_db(self):
         self.cursor.close()
         self.connect.close()
-
-    def check_if_db_exists(self, db_name):
-        if os.path.exists("data/" + db_name + ".db"):
-            return True
-        else:
-            return False
