@@ -1,3 +1,4 @@
+import json
 import os
 import DBProcessor
 import spotipy
@@ -66,11 +67,10 @@ class PlaylistProcessor:
         return decade_dict
 
     def get_year(self, playlist_name):
-        decade_dict = {'Top Billboard Hits 1950s': 1950, 'Top Billboard Hits 1960s': 1960,
-                       'Top Billboard Hits 1970s': 1970, 'Top Billboard Hits 1980s': 1980,
-                       'Top Billboard Hits 1990s': 1990, 'Top Billboard Hits 2000s': 2000,
-                       'Top Billboard Hits 2010s': 2010, 'Top Billboard Hits 2020s': 2020}
-        return decade_dict.get(playlist_name)
+        file = open("data/years.json")
+        json_years = json.load(file)
+        file.close()
+        return json_years[0][playlist_name]
 
 
 if __name__ == "__main__":
