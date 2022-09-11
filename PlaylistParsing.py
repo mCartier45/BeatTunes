@@ -48,19 +48,24 @@ class PlaylistProcessor:
         for x in range(len(uri_list)):
             temp_features = self.sp.audio_features(uri_list[x])
             # Creates an entry in the dictionary to return
-            decade_dict[uri_list[x]] = {"song_title": title_list[x],
-                                        "bpm": temp_features[0]['tempo'],
-                                        "danceability": temp_features[0]['danceability'],
-                                        "loudness": temp_features[0]['loudness'],
-                                        "speechiness": temp_features[0]['speechiness'],
-                                        "acousticness": temp_features[0]['acousticness'],
-                                        "duration_ms": temp_features[0]['duration_ms'],
-                                        "key": temp_features[0]['key'],
-                                        "instrumentalness": temp_features[0]['instrumentalness'],
-                                        "title": title_list[x],
-                                        "uri": uri_list[x],
-                                        "year": self.get_year(playlist_name)}
+            try:
+                decade_dict[uri_list[x]] = {"song_title": title_list[x],
+                                            "bpm": temp_features[0]['tempo'],
+                                            "danceability": temp_features[0]['danceability'],
+                                            "loudness": temp_features[0]['loudness'],
+                                            "speechiness": temp_features[0]['speechiness'],
+                                            "acousticness": temp_features[0]['acousticness'],
+                                            "duration_ms": temp_features[0]['duration_ms'],
+                                            "key": temp_features[0]['key'],
+                                            "instrumentalness": temp_features[0]['instrumentalness'],
+                                            "title": title_list[x],
+                                            "uri": uri_list[x],
+                                            "year": self.get_year(playlist_name)}
+            except:
+                continue
         return decade_dict
+
+
 
     def get_year(self, playlist_name):
         file = open("data/years.json")

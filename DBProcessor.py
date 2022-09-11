@@ -1,6 +1,8 @@
 import json
 import os
+import random
 import sqlite3
+import string
 
 import PlaylistParsing
 
@@ -31,7 +33,8 @@ class DBOps:
            acousticness INTEGER,
            duration_ms INTEGER,
            year INTEGER,
-           uri TEXT primary key)
+           uri TEXT,
+           id TEXT primary key)
           ''')
         # Commit DB Chances
         self.connect.commit()
@@ -73,13 +76,15 @@ class DBOps:
             duration_ms = song_dict[song].get("duration_ms")
             uri = song_dict[song].get("uri")
             year = song_dict[song].get("year")
+            id = ''.join(random.choices(string.ascii_uppercase +
+                             string.digits, k=25))
 
             print(bpm, key, loudness, acoustic, dance, title, duration_ms, uri)
 
             # Switch away from this to disallow sql injection
-            q = "INSERT INTO songs VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+            q = "INSERT INTO songs VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 
-            self.cursor.execute(q, [title, key, bpm, dance, loudness, acoustic, duration_ms, year, uri])
+            self.cursor.execute(q, [title, key, bpm, dance, loudness, acoustic, duration_ms, year, uri, id])
             self.connect.commit()
 
     def print_all_bpms(self):
@@ -95,7 +100,7 @@ class DBOps:
             print(x[0])
 
     def get_avg_bpm(self, year):
-        for x in self.cursor.execute("select avg(tempo) from songs where year=" + year):
+        for x in self.cursor.execute("select avg(tempo) from songs where year=" + str(year)):
             return x[0]
 
     def debug_sql(self, query):
