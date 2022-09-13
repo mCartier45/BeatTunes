@@ -5,14 +5,15 @@ from PlaylistParsing import PlaylistProcessor
 
 if __name__ == "__main__":
 
+    # TODO: Check if offset index starts at 0 or 1
     process_playlist = PlaylistProcessor()
     playlists = process_playlist.get_playlists()
 
     db_ops = DBProcessor.DBOps()
 
     print("Looking for Playlists")
-    if not os.path.exists(db_ops.db_path):
-        db_ops.initialize_db()
+    # if not os.path.exists(db_ops.db_path):
+    db_ops.initialize_db()
 
     db_ops.print_all_bpms()
 

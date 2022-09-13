@@ -21,8 +21,8 @@ class PlaylistProcessor:
                                         scope='user-library-read')
         self.sp = spotipy.Spotify(client_credentials_manager=self.credManager)
 
-    def get_playlists(self):
-        results = self.sp.current_user_playlists()
+    def get_playlists(self, offset=0):
+        results = self.sp.current_user_playlists(limit=10, offset=offset)
         for x in results['items']:
             print(x['name'])
 
