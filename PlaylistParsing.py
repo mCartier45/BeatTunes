@@ -68,15 +68,3 @@ class PlaylistProcessor:
             except:
                 continue
         return decade_dict
-
-
-
-
-
-        #file = open("data/years.json")
-        #json_years = json.load(file)
-        #file.close()
-        #return json_years[0][playlist_name]
-
-if __name__ == "__main__":
-    play_proc = PlaylistProcessor()

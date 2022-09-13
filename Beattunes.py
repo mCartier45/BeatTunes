@@ -22,9 +22,6 @@ if __name__ == "__main__":
     for x in year[0]:
         print(year[0][x])
 
-    # for x in year[0]:
-    # print("The average BPM for " + str(year[0][x]) + " is: %d" % db_ops.get_avg_bpm(year=year[0][x]))
-
     playlists = process_playlist.get_playlists()
     print(playlists)
 
