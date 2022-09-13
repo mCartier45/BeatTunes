@@ -10,7 +10,7 @@ import PlaylistParsing
 class DBOps:
 
     def __init__(self):
-        self.db_path = "data/beattunes.db"
+        self.db_path = "data/beattunes-test-2.db"
         if os.path.exists(self.db_path):
             self.connect = sqlite3.connect(self.db_path)
             self.cursor = self.connect.cursor()
@@ -43,7 +43,6 @@ class DBOps:
         print("Looking for Playlists")
         process_playlist = PlaylistParsing.PlaylistProcessor()
         playlists = process_playlist.get_playlists(offset=0)
-        additional_playlists = process_playlist.get_playlists(offset=50)
 
         # Add songs from playlists to database
         for x in playlists['items']:
@@ -54,20 +53,7 @@ class DBOps:
 
             uris, titles = process_playlist.get_uris_and_titles(x['uri'])
 
-            # This line does it ALL
-            new_dict = process_playlist.extract_song_information(uris, titles, playlist_name)
-            print(new_dict)
-            self.add_songs_to_db(new_dict)
-
-        for x in additional_playlists['items']:
-            playlist_name = x['name']
-            print("----------------------")
-            print(playlist_name)
-            print("----------------------")
-
-            uris, titles = process_playlist.get_uris_and_titles(x['uri'])
-
-            # This line does it ALL
+            # Problem Line
             new_dict = process_playlist.extract_song_information(uris, titles, playlist_name)
             print(new_dict)
             self.add_songs_to_db(new_dict)

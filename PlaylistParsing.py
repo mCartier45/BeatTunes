@@ -47,6 +47,10 @@ class PlaylistProcessor:
 
         for x in range(len(uri_list)):
             temp_features = self.sp.audio_features(uri_list[x])
+            temp_artist = self.sp.track(uri_list[x])
+            print("TEST ARTIST:", temp_artist)
+            print("RELEASE YEAR: " + temp_artist['album']['release_date'][0:4])
+            print("\n\n\n")
             # Creates an entry in the dictionary to return
             try:
                 decade_dict[uri_list[x]] = {"song_title": title_list[x],
@@ -60,15 +64,19 @@ class PlaylistProcessor:
                                             "instrumentalness": temp_features[0]['instrumentalness'],
                                             "title": title_list[x],
                                             "uri": uri_list[x],
-                                            "year": self.get_year(playlist_name)}
+                                            "year": temp_artist['album']['release_date'][0:4]}
             except:
                 continue
         return decade_dict
 
 
 
-    def get_year(self, playlist_name):
-        file = open("data/years.json")
-        json_years = json.load(file)
-        file.close()
-        return json_years[0][playlist_name]
+
+
+        #file = open("data/years.json")
+        #json_years = json.load(file)
+        #file.close()
+        #return json_years[0][playlist_name]
+
+if __name__ == "__main__":
+    play_proc = PlaylistProcessor()
