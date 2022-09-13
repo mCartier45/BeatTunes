@@ -7,7 +7,6 @@ if __name__ == "__main__":
 
     # TODO: Check if offset index starts at 0 or 1
     process_playlist = PlaylistProcessor()
-    playlists = process_playlist.get_playlists()
 
     db_ops = DBProcessor.DBOps()
 

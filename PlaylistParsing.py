@@ -22,7 +22,7 @@ class PlaylistProcessor:
         self.sp = spotipy.Spotify(client_credentials_manager=self.credManager)
 
     def get_playlists(self, offset=0):
-        results = self.sp.current_user_playlists(limit=10, offset=offset)
+        results = self.sp.current_user_playlists(limit=50, offset=offset)
         for x in results['items']:
             print(x['name'])
 

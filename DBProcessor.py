@@ -40,12 +40,26 @@ class DBOps:
         self.connect.commit()
 
         # Init Playlist Processing
-        process_playlist = PlaylistParsing.PlaylistProcessor()
-        playlists = process_playlist.get_playlists()
-
         print("Looking for Playlists")
+        process_playlist = PlaylistParsing.PlaylistProcessor()
+        playlists = process_playlist.get_playlists(offset=0)
+        additional_playlists = process_playlist.get_playlists(offset=50)
+
         # Add songs from playlists to database
         for x in playlists['items']:
+            playlist_name = x['name']
+            print("----------------------")
+            print(playlist_name)
+            print("----------------------")
+
+            uris, titles = process_playlist.get_uris_and_titles(x['uri'])
+
+            # This line does it ALL
+            new_dict = process_playlist.extract_song_information(uris, titles, playlist_name)
+            print(new_dict)
+            self.add_songs_to_db(new_dict)
+
+        for x in additional_playlists['items']:
             playlist_name = x['name']
             print("----------------------")
             print(playlist_name)
@@ -77,7 +91,7 @@ class DBOps:
             uri = song_dict[song].get("uri")
             year = song_dict[song].get("year")
             id = ''.join(random.choices(string.ascii_uppercase +
-                             string.digits, k=25))
+                                        string.digits, k=25))
 
             print(bpm, key, loudness, acoustic, dance, title, duration_ms, uri)
 
