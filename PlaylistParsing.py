@@ -20,6 +20,7 @@ class PlaylistProcessor:
                                         redirect_uri="http://localhost:8888/callback",
                                         scope='user-library-read')
         self.sp = spotipy.Spotify(client_credentials_manager=self.credManager)
+        self.user_info = self.sp.current_user()
 
     def get_playlists(self, offset=0):
         results = self.sp.current_user_playlists(limit=50, offset=offset)
@@ -64,7 +65,8 @@ class PlaylistProcessor:
                                             "instrumentalness": temp_features[0]['instrumentalness'],
                                             "title": title_list[x],
                                             "uri": uri_list[x],
-                                            "year": temp_artist['album']['release_date'][0:4]}
+                                            "year": temp_artist['album']['release_date'][0:4],
+                                            "playlist": playlist_name}
             except:
                 continue
         return decade_dict

@@ -9,8 +9,8 @@ import PlaylistParsing
 
 class DBOps:
 
-    def __init__(self):
-        self.db_path = "data/beattunes-test-2.db"
+    def __init__(self, db_name):
+        self.db_path = "data/" + db_name + ".db"
         if os.path.exists(self.db_path):
             self.connect = sqlite3.connect(self.db_path)
             self.cursor = self.connect.cursor()
@@ -34,6 +34,7 @@ class DBOps:
            duration_ms INTEGER,
            year INTEGER,
            uri TEXT,
+           playlist TEXT,
            id TEXT primary key)
           ''')
         # Commit DB Chances
@@ -78,13 +79,14 @@ class DBOps:
             year = song_dict[song].get("year")
             id = ''.join(random.choices(string.ascii_uppercase +
                                         string.digits, k=25))
+            playlist = " "
 
             print(bpm, key, loudness, acoustic, dance, title, duration_ms, uri)
 
             # Switch away from this to disallow sql injection
-            q = "INSERT INTO songs VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+            q = "INSERT INTO songs VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 
-            self.cursor.execute(q, [title, key, bpm, dance, loudness, acoustic, duration_ms, year, uri, id])
+            self.cursor.execute(q, [title, key, bpm, dance, loudness, acoustic, duration_ms, year, uri, playlist, id])
             self.connect.commit()
 
     def print_all_bpms(self):
