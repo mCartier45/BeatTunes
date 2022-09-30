@@ -14,6 +14,8 @@ if __name__ == "__main__":
     if not os.path.exists(db_ops.db_path):
         db_ops.initialize_db()
 
+
+
     db_ops.print_all_bpms()
 
     playlists = process_playlist.get_playlists()

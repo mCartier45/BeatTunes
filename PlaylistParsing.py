@@ -1,6 +1,6 @@
-import json
+import math
 import os
-import DBProcessor
+
 import spotipy
 from dotenv import load_dotenv
 from spotipy import SpotifyOAuth
@@ -23,7 +23,7 @@ class PlaylistProcessor:
         self.user_info = self.sp.current_user()
 
     def get_playlists(self, offset=0):
-        results = self.sp.current_user_playlists(limit=50, offset=offset)
+        results = self.sp.current_user_playlists(offset=offset)
         for x in results['items']:
             print(x['name'])
 
@@ -41,32 +41,52 @@ class PlaylistProcessor:
             track_names.append(x['track']['name'])
         return track_uris, track_names
 
+    def merge(self, dict1, dict2):
+        toReturn = dict1 | dict2
+        return toReturn
+
     # TODO: Use this method to return a dictionary of relevant information
     # and save it to the database.
     def extract_song_information(self, uri_list, title_list, playlist_name):
         decade_dict = {}
 
+        temp_features = self.sp.audio_features(uri_list)
+
+        size_of_artist_lists = math.floor(len(uri_list) / 2)
+
+        temp_artists = self.sp.tracks(uri_list[0:size_of_artist_lists])
+        print("Temp Artist Length: ", len(temp_artists['tracks']))
+        temp_artist_extra = self.sp.tracks(uri_list[size_of_artist_lists:len(uri_list)])
+        print("Temp Artist Extra Length: ", len(temp_artist_extra['tracks']))
+        dict_artists = self.merge(temp_artists, temp_artist_extra)
+        print("LENGTH OF TEMP ARTIST (SHOULD BE 40 OR 100): ", len(dict_artists))
+        n = 0
+
         for x in range(len(uri_list)):
-            temp_features = self.sp.audio_features(uri_list[x])
-            temp_artist = self.sp.track(uri_list[x])
-            print("TEST ARTIST:", temp_artist)
-            print("RELEASE YEAR: " + temp_artist['album']['release_date'][0:4])
-            print("\n\n\n")
+            print("N: ", n)
+            # print("TITLE:", title_list[x])
+            # print("RELEASE YEAR: ", dict_artists['tracks'][x]['album']['release_date'])
+            # print("\n\n\n")
             # Creates an entry in the dictionary to return
             try:
                 decade_dict[uri_list[x]] = {"song_title": title_list[x],
-                                            "bpm": temp_features[0]['tempo'],
-                                            "danceability": temp_features[0]['danceability'],
-                                            "loudness": temp_features[0]['loudness'],
-                                            "speechiness": temp_features[0]['speechiness'],
-                                            "acousticness": temp_features[0]['acousticness'],
-                                            "duration_ms": temp_features[0]['duration_ms'],
-                                            "key": temp_features[0]['key'],
-                                            "instrumentalness": temp_features[0]['instrumentalness'],
+                                            "bpm": temp_features[x]['tempo'],
+                                            "danceability": temp_features[x]['danceability'],
+                                            "loudness": temp_features[x]['loudness'],
+                                            "speechiness": temp_features[x]['speechiness'],
+                                            "acousticness": temp_features[x]['acousticness'],
+                                            "duration_ms": temp_features[x]['duration_ms'],
+                                            "key": temp_features[x]['key'],
+                                            "instrumentalness": temp_features[x]['instrumentalness'],
                                             "title": title_list[x],
                                             "uri": uri_list[x],
-                                            "year": temp_artist['album']['release_date'][0:4],
+                                            "year": playlist_name[18:22],
                                             "playlist": playlist_name}
+                n += 1
+
             except:
-                continue
+                print("Song is null")
+
+        print(decade_dict)
+
         return decade_dict

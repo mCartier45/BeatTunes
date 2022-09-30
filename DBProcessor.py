@@ -43,10 +43,24 @@ class DBOps:
         # Init Playlist Processing
         print("Looking for Playlists")
         process_playlist = PlaylistParsing.PlaylistProcessor()
-        playlists = process_playlist.get_playlists(offset=0)
+        playlists = process_playlist.get_playlists()
+        additional_playlists = process_playlist.get_playlists(offset=50)
 
         # Add songs from playlists to database
         for x in playlists['items']:
+            playlist_name = x['name']
+            print("----------------------")
+            print(playlist_name)
+            print("----------------------")
+
+            uris, titles = process_playlist.get_uris_and_titles(x['uri'])
+
+            # Problem Line
+            new_dict = process_playlist.extract_song_information(uris, titles, playlist_name)
+            print(new_dict)
+            self.add_songs_to_db(new_dict)
+
+        for x in additional_playlists['items']:
             playlist_name = x['name']
             print("----------------------")
             print(playlist_name)
@@ -79,9 +93,9 @@ class DBOps:
             year = song_dict[song].get("year")
             id = ''.join(random.choices(string.ascii_uppercase +
                                         string.digits, k=25))
-            playlist = " "
+            playlist = song_dict[song].get("playlist")
 
-            print(bpm, key, loudness, acoustic, dance, title, duration_ms, uri)
+            print(playlist, title, bpm, key, loudness, acoustic, dance, duration_ms, uri)
 
             # Switch away from this to disallow sql injection
             q = "INSERT INTO songs VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
