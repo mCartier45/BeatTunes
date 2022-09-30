@@ -85,11 +85,8 @@ def check_if_song_is_missing(year, list_from_wiki):
             print("From Wiki: " + list_from_wiki[x])
 
 
-
-
-
-if __name__ == "__main__":
-    data = get_billboard_song_titles_for_year(1981)
+def check_for_missing_songs(year):
+    data = get_billboard_song_titles_for_year(year)
     data_clean = []
 
     for x,y,z  in data:
@@ -97,4 +94,9 @@ if __name__ == "__main__":
 
     data_clean.sort()
 
-    check_if_song_is_missing(list_from_wiki=data_clean, year=1981)
+    check_if_song_is_missing(list_from_wiki=data_clean, year=year)
+
+
+
+if __name__ == "__main__":
+    check_for_missing_songs(1959)
