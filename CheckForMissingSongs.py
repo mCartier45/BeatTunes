@@ -70,13 +70,20 @@ def check_if_song_is_missing(year, list_from_wiki):
     print("DB length: ", len(list_of_songs_in_db))
 
     missing_song_tracker = 0
+    if len(list_from_wiki) > len(list_of_songs_in_db):
+        print('a')
     for x in range(len(list_from_wiki)):
+        is_found = False
+        found_at = 0
 
-        if(list_from_wiki[x] == list_of_songs_in_db[x] or list_from_wiki[x] in list_of_songs_in_db[x]) or list_of_songs_in_db[x] in list_from_wiki[x]:
-            print("MATCH FOUND")
-        else:
-            missing_song_tracker += 1
-            print("From Wiki: " + list_from_wiki[x] + "  |||||  " + "From DB: " + list_of_songs_in_db[x])
+        for y in range(len(list_of_songs_in_db)):
+
+            if(list_from_wiki[x] == list_of_songs_in_db[y] or list_from_wiki[x] in list_of_songs_in_db[y]) or list_of_songs_in_db[y] in list_from_wiki[x]:
+                is_found = True
+
+        if not is_found:
+            print("From Wiki: " + list_from_wiki[x])
+
 
 
 
