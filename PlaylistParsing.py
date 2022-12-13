@@ -45,8 +45,6 @@ class PlaylistProcessor:
         toReturn = dict1 | dict2
         return toReturn
 
-    # TODO: Use this method to return a dictionary of relevant information
-    # and save it to the database.
     def extract_song_information(self, uri_list, title_list, playlist_name):
         decade_dict = {}
 
@@ -77,6 +75,11 @@ class PlaylistProcessor:
                                             "acousticness": temp_features[x]['acousticness'],
                                             "duration_ms": temp_features[x]['duration_ms'],
                                             "key": temp_features[x]['key'],
+                                            "energy": temp_features[x]['energy'],
+                                            "liveness": temp_features[x]['liveness'],
+                                            "mode": temp_features[x]['mode'],
+                                            "time_signature": temp_features[x]['time_signature'],
+                                            "valence": temp_features[x]['valence'],
                                             "instrumentalness": temp_features[x]['instrumentalness'],
                                             "title": title_list[x],
                                             "uri": uri_list[x],

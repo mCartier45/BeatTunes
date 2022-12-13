@@ -35,7 +35,13 @@ class DBOps:
            year INTEGER,
            uri TEXT,
            playlist TEXT,
-           id TEXT primary key)
+           id TEXT primary key,
+           energy TEXT,
+           liveness TEXT,
+           time_signature TEXT,
+           valence TEXT,
+           instrumentallness TEXT,
+           mode TEXT)
           ''')
         # Commit DB Chances
         self.connect.commit()
@@ -91,16 +97,22 @@ class DBOps:
             duration_ms = song_dict[song].get("duration_ms")
             uri = song_dict[song].get("uri")
             year = song_dict[song].get("year")
+            energy = song_dict[song].get("energy")
+            liveness = song_dict[song].get("liveness")
+            time_signature = song_dict[song].get("time_signature")
+            valence = song_dict[song].get("valence")
+            instrumentalness = song_dict[song].get("instrumentalness")
+            mode = self.convert_mode(int(song_dict[song].get("mode")))
             id = ''.join(random.choices(string.ascii_uppercase +
                                         string.digits, k=25))
             playlist = song_dict[song].get("playlist")
 
-            print(playlist, title, bpm, key, loudness, acoustic, dance, duration_ms, uri)
+            print(playlist, title, bpm, key, loudness, acoustic, dance, duration_ms, energy, liveness, time_signature, valence, instrumentalness, mode, uri)
 
             # Switch away from this to disallow sql injection
-            q = "INSERT INTO songs VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+            q = "INSERT INTO songs VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 
-            self.cursor.execute(q, [title, key, bpm, dance, loudness, acoustic, duration_ms, year, uri, playlist, id])
+            self.cursor.execute(q, [title, key, bpm, dance, loudness, acoustic, duration_ms, year, uri, playlist, id, energy, liveness, time_signature, valence, instrumentalness, mode])
             self.connect.commit()
 
     def print_all_bpms(self):
@@ -119,15 +131,17 @@ class DBOps:
         for x in self.cursor.execute("select avg(tempo) from songs where year=" + str(year)):
             return x[0]
 
-    def debug_sql(self, query):
-        for x in self.cursor.execute(query):
-            print(x[0])
-
     def get_most_common_key(self, year):
         # Returns most common key via SQL
         q = "SELECT key FROM songs WHERE year=" + year + " GROUP BY key ORDER BY key DESC LIMIT 1"
         for x in self.cursor.execute(q):
             return x[0]
+
+    def convert_mode(self, mode):
+        if mode == 0:
+            return "minor"
+        else:
+            return "major"
 
     def close_db(self):
         self.cursor.close()
